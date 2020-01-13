@@ -12,7 +12,7 @@ import hashlib
 
 version = '0.0.1'
 
-class photosort():
+class photorganizer():
 
     def __init__(self, input_path, output_path):
     
@@ -23,6 +23,8 @@ class photosort():
         print('Number of Images and Videos:', len(file_list))
         print('Input path:', input_path)
         print('Output path:', output_path)
+        
+        input("Start?")
         
         self.copy_files(file_list, output_path)
         
@@ -69,37 +71,53 @@ class photosort():
             for chunk in iter(lambda: f.read(65536), b""):
                 md5.update(chunk)
         return md5.hexdigest()
+    
+    def copy_file(self, input_file, dest_file, i, total):
+        try:
+            shutil.copy2(input_file, dest_file)
+        except IOError as io_err:
+            os.makedirs(os.path.realpath(os.path.dirname(dest_file)))
+            shutil.copy2(input_file, dest_file)
+        print(i, "/", total, input_file, dest_file, "copyed.")
+        
                         
         
     def copy_files(self, file_list, output_path):
-
+        
+        total = len(file_list)
+        i = 0
+        
         for date_time, input_file in file_list:
+            i += 1
             filename, file_extension = os.path.splitext(input_file)
             dest_file = os.path.join(
                     output_path, 
                     date_time.strftime("%Y"), 
                     date_time.strftime("%m"),
-                    date_time.strftime("%Y.%m.%d_%H:%M:%S") + file_extension.lower())
+                    date_time.strftime("%Y-%m-%d_%H-%M-%S") + file_extension.lower())
             
             #check if there is a dest_file already
             if os.path.isfile(dest_file):
-                if self.checksum(dest_file) == self.checksum(input_file):
-                    print("Skip coping the same file.")
+                hash_input_file = self.checksum(input_file)
+                hash_output_file = self.checksum(dest_file)
+                if hash_output_file == hash_input_file:
+                    print(i, "/", total,"Skip coping the same file.")
                 else:
-                    print(input_file, dest_file, "are not identical. Skip coping that file.")
+                    dest_file = os.path.join(
+                        output_path, 
+                        date_time.strftime("%Y"), 
+                        date_time.strftime("%m"),
+                        date_time.strftime("%Y-%m-%d_%H-%M-%S") + "_" + hash_output_file[:3] + file_extension.lower()
+                    )
+                    self.copy_file(input_file, dest_file, i, total)
             else:
-                try:
-                    shutil.copy(input_file, dest_file)
-                except IOError as io_err:
-                    os.makedirs(os.path.dirname(dest_file))
-                    shutil.copy(input_file, dest_file)
-                print(input_file, dest_file, "copyed.")
+                self.copy_file(input_file, dest_file, i, total)
 
 
 if __name__ == '__main__':
     try:
         if len(sys.argv) == 3:
-            photosort(sys.argv[1], sys.argv[2])
+            photorganizer(sys.argv[1], sys.argv[2])
         else:   
             print("You need an input and an output path!")  
     except KeyboardInterrupt:
