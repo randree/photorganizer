@@ -22,3 +22,4 @@ Copy `photorganizer.py` to directory of your choice. Check if it is executable.
 ```
 $ ./photorganizer.py input_directory output_directory
 $ ./photorganizer.py /home/me/picture_mess/ /home/me/pictures_organized_by_date/
+```
