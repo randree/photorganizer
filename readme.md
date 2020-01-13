@@ -1,4 +1,4 @@
-#Photorganizer
+# Photorganizer
 
 Photorganizer is a simple command line tool written in python to help you to organize you pictures.
 
