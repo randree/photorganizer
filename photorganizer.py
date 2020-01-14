@@ -47,11 +47,11 @@ class photorganizer():
                 if mime_type[0] and pattern.match(mime_type[0]):
                     #print(mimetypes.guess_type(file))
                     try:
-                        exif_date = Image.open(file).getexif()[36867]
+                        image = Image.open(file)
+                        exif_date = image._getexif()[36867]
                         if exif_date:
                             exif_date = exif_date.replace(":",".", 2)
-                        date_time = parser.parse(exif_date, fuzzy=True, yearfirst=True, ignoretz=True)
-                        #print(type(date_time))
+                        date_time = parser.parse(exif_date, fuzzy=True, yearfirst=True, ignoretz=True)                        
                         #date = time.strptime(exif_date, '%Y:%m:%d %H:%M:%S')
                         
                     except:
