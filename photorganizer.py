@@ -49,15 +49,19 @@ class photorganizer():
                     try:
                         image = Image.open(file)
                         exif_date = image._getexif()[36867]
-                        if exif_date:
-                            exif_date = exif_date.replace(":",".", 2)
-                        date_time = parser.parse(exif_date, fuzzy=True, yearfirst=True, ignoretz=True)                        
-                        #date = time.strptime(exif_date, '%Y:%m:%d %H:%M:%S')
+                        
+                        if not exif_date:
+                            raise ValueError("No EXIF date found")
+                        
+                        #If EXIF string is to short than raise an exeption and take the file timestramp instead
+                        if len(exif_date) < 12:
+                            raise ValueError("EXIF date string to short")
+                            
+                        exif_date = exif_date.replace(":",".", 2)
+                        date_time = parser.parse(exif_date, fuzzy=True, yearfirst=True, ignoretz=True)  
                         
                     except:
                         date_time = datetime.datetime.fromtimestamp(os.path.getmtime(file))
-                        #print(datetime.datetime.fromtimestamp(os.path.getmtime(file)).strftime("%Y"))
-                        #date_time = parser.parse(datetime.datetime.fromtimestamp(os.path.getmtime(file)), fuzzy=True, yearfirst=True, ignoretz=True)
                     
                     #create list
                     file_list.append([date_time, file])
